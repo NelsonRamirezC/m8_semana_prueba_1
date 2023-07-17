@@ -1,5 +1,6 @@
 import Post from "../models/Post.models.js";
 import Usuario from "../models/Usuario.models.js";
+import Comentario from "../models/Comentario.models.js";
 import moment from "moment";
 moment.locale("es");
 
@@ -48,22 +49,24 @@ const detallePosts = async (req, res) => {
     let id = req.params.id;
 
     let post = await Post.findByPk(id, {
-        raw: true,
         include: [
             {
                 model: Usuario,
                 as: "autor",
                 attributes: ["nombre", "apellido"],
             },
+            {
+                model: Comentario,
+                as: "comentarios",
+                order: [["createdAt", "DESC"]]
+            }
         ],
     });
 
-    console.log(post);
-    post.nombreAutor = post["autor.nombre"];
-    delete post["autor.nombre"];
-    post.apellidoAutor = post["autor.apellido"];
-    delete post["autor.apellido"];
+    post = post.toJSON();
     post.createdAt = moment(post.createdAt).format("MMMM Do YYYY, h:mm:ss a");
+
+    console.log(post);
 
     try {
         res.render("detallePost", {

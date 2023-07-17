@@ -6,9 +6,15 @@
                 imagen = post.imagen  
                 contenido = post.contenido  
                 creacion = post.createdAt
-                nombre = post.nombreAutor
-                apellido = post.apellidoAutor    
+                nombre = post.autor.nombre
+                apellido = post.autor.apellido   
             }}
+</section>
+<section>
+    <h3 class="text-center">comentarios realizados</h3>
+    {{#each post.comentarios}}
+        <p>{{this.contenido}}</p>
+    {{/each}}
 </section>
 
 <section class="py-5">
@@ -16,6 +22,7 @@
 
     <form id="formComentario" class="row g-4">
         <div class="input-group" class="col-12">
+            <input type="hidden" value="{{post.id}}" name="postId">
             <label for="contenido" class="form-label col-12">contenido: </label>
             <textarea name="contenido" rows="10" class="w-100" required></textarea>
         </div>
@@ -24,3 +31,38 @@
         </div>
     </form>
 </section>
+
+
+<script>
+    let formComentario = document.getElementById("formComentario");
+
+    formComentario.addEventListener("submit", async (event)=> {
+        event.preventDefault();
+        let data = new FormData(formComentario);
+
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${token}`);
+
+        try{
+            let response = await fetch("/api/v1/comentarios", {
+                method: "POST",
+                body: data,
+                headers: myHeaders
+            })
+
+            let result = await response.json();
+
+            if(result.code == 201){
+                alert(result.message);
+                location.reload();
+            }else{
+                alert(result.message);
+            }
+
+        }catch(error){
+            alert("Ha ocurrido un error al comentar la publicación.")
+        }
+
+
+    })
+</script>
