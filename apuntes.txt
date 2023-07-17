@@ -1,0 +1,6 @@
+dependencias de desarrollo:
+npm i nodemon -D
+
+
+dependencias:
+npm i sequelize pg pg-hstore express express-fileupload cors morgan dotenv
