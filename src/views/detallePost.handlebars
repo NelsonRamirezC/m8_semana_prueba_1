@@ -12,9 +12,11 @@
 </section>
 <section>
     <h3 class="text-center">comentarios realizados</h3>
-    {{#each post.comentarios}}
-        <p>{{this.contenido}}</p>
-    {{/each}}
+    <h4>Cantidad de comentarios realizados por los usuarios: {{cantidadComentarios}}</h4>
+    {{> acordeon
+        comentarios= post.comentarios
+    }}
+        
 </section>
 
 <section class="py-5">

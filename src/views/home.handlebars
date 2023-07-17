@@ -4,6 +4,7 @@
 
     {{#if posts}}
         <h2 class="text-center mt-5">POSTS</h2>
+        <h3>Cantidad de post creados por los usuarios: {{cantidadComentarios}}</h3>
         {{#each posts}}
             {{> post 
                 titulo= this.titulo 
@@ -11,7 +12,8 @@
                 contenido = this.contenido  
                 creacion = this.createdAt
                 nombre = this.nombreAutor
-                apellido = this.apellidoAutor    
+                apellido = this.apellidoAutor
+                boton = "true"
             }}
         {{/each}}
 

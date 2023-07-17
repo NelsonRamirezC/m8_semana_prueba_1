@@ -1,12 +1,14 @@
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 import Usuario from "../models/Usuario.models.js";
 
 export const emitToken = async (req, res, next) => {
     try {
         let { email, password } = req.body;
         let usuario = await Usuario.findOne({
-            where: { email, password },
-            attributes: ["id", "nombre", "apellido", "email"],
+            raw: true,
+            where: {email},
+            attributes: ["id", "nombre", "apellido", "email", "password"],
         });
 
         if (!usuario) {
@@ -14,6 +16,20 @@ export const emitToken = async (req, res, next) => {
                 .status(400)
                 .json({ code: 400, message: "Error de autenticación." });
         }
+
+
+        let passwordHash = await bcrypt.compare(password, usuario.password);
+
+        if (!passwordHash) {
+            return res
+                .status(400)
+                .json({ code: 400, message: "Error de autenticaciónm, verifique credenciales." });
+        }
+
+        //ELIMINAMOS EL PASSWORD DESPUÉS DE VERIFICAR HASH
+        delete usuario.password;
+
+
         let token = jwt.sign(
             {
                 exp: Math.floor(Date.now() / 1000) + 60 * 60,
@@ -26,6 +42,7 @@ export const emitToken = async (req, res, next) => {
         
         next();
     } catch (error) {
+        console.log(error)
         return res.status(500).json({ code: 500, message: "Error en proceso de emisión de credenciales." });
     }
 };

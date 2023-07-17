@@ -5,8 +5,8 @@ import moment from "moment";
 moment.locale("es");
 
 const home = async (req, res) => {
+    let cantidadComentarios = await Post.count();
     let posts = await Post.findAll({
-        raw: true,
         order: [["createdAt", "DESC"]],
         include: [
             {
@@ -17,20 +17,15 @@ const home = async (req, res) => {
         ],
     });
 
+    posts = posts.map(post => post.toJSON())
     posts = posts.map((post) => {
-        post.nombreAutor = post["autor.nombre"];
-        delete post["autor.nombre"];
-        post.apellidoAutor = post["autor.apellido"];
-        delete post["autor.apellido"];
-        post.createdAt = moment(post.createdAt).format(
-            "MMMM Do YYYY, h:mm:ss a"
-        );
-        return post;
+        post.createdAt = moment(post.createdAt).format("MMMM Do YYYY, h:mm:ss a");
+        return post
     });
-    console.log(posts);
 
     res.render("home", {
         posts,
+        cantidadComentarios,
     });
 };
 
@@ -47,30 +42,44 @@ const posts = (req, res) => {
 
 const detallePosts = async (req, res) => {
     let id = req.params.id;
-
-    let post = await Post.findByPk(id, {
-        include: [
-            {
-                model: Usuario,
-                as: "autor",
-                attributes: ["nombre", "apellido"],
-            },
-            {
-                model: Comentario,
-                as: "comentarios",
-                order: [["createdAt", "DESC"]]
-            }
-        ],
-    });
-
-    post = post.toJSON();
-    post.createdAt = moment(post.createdAt).format("MMMM Do YYYY, h:mm:ss a");
-
-    console.log(post);
-
     try {
+        let cantidadComentarios = await Comentario.count({
+            where: {
+                postId: id
+            }
+        })
+
+        let post = await Post.findByPk(id, {
+            include: [
+                {
+                    model: Usuario,
+                    as: "autor",
+                    attributes: ["nombre", "apellido"],
+                },
+                {
+                    model: Comentario,
+                    as: "comentarios",
+                    order: [["createdAt", "DESC"]],
+                    include: [
+                        {
+                            model: Usuario,
+                            as: "autor",
+                            attributes: ["nombre", "apellido"],
+                        },
+                    ],
+                },
+            ],
+        });
+
+        post = post.toJSON();
+        post.createdAt = moment(post.createdAt).format(
+            "MMMM Do YYYY, h:mm:ss a"
+        );
+
+        console.log(post);
         res.render("detallePost", {
             post,
+            cantidadComentarios,
         });
     } catch (error) {
         res.render("detallePost", {
