@@ -1,0 +1,26 @@
+<h1 class="text-center">Detalle post:  {{post.id}}</h1>
+
+<section class="mt-3">
+    {{> post 
+                titulo= post.titulo 
+                imagen = post.imagen  
+                contenido = post.contenido  
+                creacion = post.createdAt
+                nombre = post.nombreAutor
+                apellido = post.apellidoAutor    
+            }}
+</section>
+
+<section class="py-5">
+    <h2 class="text-center">Comentar.</h2>
+
+    <form id="formComentario" class="row g-4">
+        <div class="input-group" class="col-12">
+            <label for="contenido" class="form-label col-12">contenido: </label>
+            <textarea name="contenido" rows="10" class="w-100" required></textarea>
+        </div>
+        <div>
+           <button class="btn btn-primary">Comentar</button> 
+        </div>
+    </form>
+</section>

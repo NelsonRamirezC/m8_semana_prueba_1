@@ -1,1 +1,22 @@
 <h1 class="text-center mt-3">Vista principal</h1>
+
+<section>
+
+    {{#if posts}}
+        <h2 class="text-center mt-5">POSTS</h2>
+        {{#each posts}}
+            {{> post 
+                titulo= this.titulo 
+                imagen = this.imagen  
+                contenido = this.contenido  
+                creacion = this.createdAt
+                nombre = this.nombreAutor
+                apellido = this.apellidoAutor    
+            }}
+        {{/each}}
+
+    {{else}}
+        <h2 class="text-center">No existe POST PARA MOSTRAR</h2>
+    {{/if}}
+
+</section>

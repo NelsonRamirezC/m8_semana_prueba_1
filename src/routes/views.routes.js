@@ -12,5 +12,6 @@ router.get("/registro", controller.registro);
 
 router.get("/posts", controller.posts);
 
+router.get("/posts/detalle/:id", controller.detallePosts);
 
 export default router;

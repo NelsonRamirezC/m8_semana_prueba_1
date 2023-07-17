@@ -3,7 +3,7 @@ import fs from "fs";
 
 const crearPost = async (req, res) => {
     try {
-        let pathImagen = req.pathImagen; 
+        let nombreImagen = req.nombreImagen; 
         let usuario = req.usuario;
         let { titulo, contenido } = req.body;
         console.log("body", req.body);
@@ -11,9 +11,9 @@ const crearPost = async (req, res) => {
         let nuevoPost = await Post.create({
             titulo,
             contenido,
-            imagen: pathImagen,
-            autorId: usuario.id
-        })
+            imagen: "/public/uploads/"+ nombreImagen,
+            autorId: usuario.id,
+        });
 
         res.status(201).send({code: 201, message: "Post creado con éxito."})
 
