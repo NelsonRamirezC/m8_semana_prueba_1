@@ -6,13 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "SET NODE_ENV=development && nodemon index.js",
-    "start": "node index.js",
-    "prod": "SET NODE_ENV=production && node index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/NelsonRamirezC/m8_d2_subida_archivos.git"
+    "dev": "nodemon index.js",
+    "start": "node index.js"
   },
   "keywords": [
     "express",
@@ -25,10 +20,6 @@
   ],
   "author": "Nelson Ramírez",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/NelsonRamirezC/m8_d2_subida_archivos/issues"
-  },
-  "homepage": "https://github.com/NelsonRamirezC/m8_d2_subida_archivos#readme",
   "dependencies": {
     "cloudinary": "^1.37.3",
     "cors": "^2.8.5",

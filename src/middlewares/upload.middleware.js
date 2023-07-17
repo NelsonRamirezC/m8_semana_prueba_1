@@ -4,9 +4,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const uploadFiles = (req, res, next) => {
     try {
-        let foto = req.files.foto;
+        let imagen = req.files.imagen;
         let formatosPermitidos = ["jpeg", "png", "webp", "gif", "svg"];
-        let extension = `${foto.mimetype.split("/")[1]}`;
+        let extension = `${imagen.mimetype.split("/")[1]}`;
 
         if (!formatosPermitidos.includes(extension)) {
             return res.status(400).json({
@@ -19,7 +19,7 @@ const uploadFiles = (req, res, next) => {
         let nombreFoto = `${Date.now()}-img.${extension}`;
         let pathDestino = path.resolve(__dirname, "../../public/uploads/" + nombreFoto);
 
-        foto.mv(pathDestino, async (error) => {
+        imagen.mv(pathDestino, async (error) => {
             if (error) {
                 console.log(error);
                 return res.status(500).json({

@@ -10,10 +10,10 @@ let rutaEnv = path.join(__dirname, "/../../.env");
 config({ path: rutaEnv });
 
 
-database = process.env.DB_DATABASE;
-username = process.env.DB_USERNAME;
-password = process.env.DB_PASSWORD;
-host = process.env.DB_HOST;
+let database = process.env.DB_DATABASE;
+let username = process.env.DB_USERNAME;
+let password = process.env.DB_PASSWORD;
+let host = process.env.DB_HOST;
 
 const sequelize = new Sequelize(database, username, password, {
     host: host,
@@ -25,7 +25,6 @@ const sequelize = new Sequelize(database, username, password, {
         acquire: 20000,
         idle: 5000,
     },
-    dialectOptions,
     dialectModule: pg,
 });
 

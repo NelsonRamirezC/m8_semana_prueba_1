@@ -1,0 +1,54 @@
+<h1 class="text-center mt-3">Crea una publicación</h1>
+
+
+<section>
+    <form id="formPosts" class="row g-4">
+        <div class="input-group" class="col-12">
+            <label for="titulo" class="form-label">Titulo: </label>
+            <input type="text" class="form-control" name="titulo" required>
+        </div>
+        <div class="input-group" class="col-12">
+            <label for="contenido" class="form-label col-12">contenido: </label>
+            <textarea name="contenido" rows="10" class="w-100" required></textarea>
+        </div>
+        <div class="input-group" class="col-12">
+            <label for="imagen" class="form-label">Imagen: </label>
+            <input type="file" name="imagen">
+        </div>
+        
+        <div>
+           <button class="btn btn-primary">Crear post</button> 
+        </div>
+    </form>
+</section>
+
+
+<script>
+
+const formPosts = document.getElementById("formPosts");
+
+        formPosts.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const myHeaders = new Headers();
+            myHeaders.append("Authorization", `Bearer ${token}`);
+
+            let data = new FormData(formPosts);
+
+            let response = await fetch("/api/v1/posts", {
+                method: "POST",
+                body: data,
+                headers: myHeaders,
+                redirect: 'follow'
+            })
+            
+            let result = await response.json();
+
+            if(result.code == 201){
+                alert(result.message);
+                location.href = "/home"
+            }else{
+                alert(result.message);
+            }
+        })
+
+</script>

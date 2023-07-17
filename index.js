@@ -2,6 +2,7 @@ import app from "./src/app.js";
 import sequelize from "./src/database/database.js";
 
 //modelos
+import "./src/models/asociaciones.js";
 
 
 const PORT = process.env.PORT || 3000;

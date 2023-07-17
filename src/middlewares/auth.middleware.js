@@ -2,27 +2,32 @@ import jwt from "jsonwebtoken";
 import Usuario from "../models/Usuario.models.js";
 
 export const emitToken = async (req, res, next) => {
-    let { email, password } = req.body;
-    let usuario = await Usuario.findOne({
-        where: { email, password },
-        attributes: ["id", "nombre", "rut", "email", "admin"],
-    });
+    try {
+        let { email, password } = req.body;
+        let usuario = await Usuario.findOne({
+            where: { email, password },
+            attributes: ["id", "nombre", "apellido", "email"],
+        });
 
-    if (!usuario) {
-        return res
-            .status(400)
-            .json({ code: 400, message: "Error de autenticación." });
+        if (!usuario) {
+            return res
+                .status(400)
+                .json({ code: 400, message: "Error de autenticación." });
+        }
+        let token = jwt.sign(
+            {
+                exp: Math.floor(Date.now() / 1000) + 60 * 60,
+                data: usuario,
+            },
+            process.env.PASSWORD_SECRET
+        );
+        req.token = token;
+        req.usuario = usuario;
+        
+        next();
+    } catch (error) {
+        return res.status(500).json({ code: 500, message: "Error en proceso de emisión de credenciales." });
     }
-    let token = jwt.sign(
-        {
-            exp: Math.floor(Date.now() / 1000) + 60 * 60,
-            data: usuario,
-        },
-        process.env.PASSWORD_SECRET
-    );
-    console.log(token);
-    req.token = token;
-    next();
 };
 
 export const verifyToken = (req, res, next) => {
@@ -30,18 +35,18 @@ export const verifyToken = (req, res, next) => {
         let { token } = req.query;
         console.log(token);
         if (!token) {
-             token = req.headers["authorization"];
-             if (!token)
-                 return res
-                     .status(400)
-                     .send(
-                         "ruta protegida, debe proporcionar un token de acceso."
-                     );
-             token = token.split(" ")[1];
-             console.log(token);
-             if (token.length == 0) {
-                 throw new Error("No se ha proporcionado un token");
-             }
+            token = req.headers["authorization"];
+            if (!token)
+                return res
+                    .status(400)
+                    .send(
+                        "ruta protegida, debe proporcionar un token de acceso."
+                    );
+            token = token.split(" ")[1];
+            console.log(token);
+            if (token.length == 0) {
+                throw new Error("No se ha proporcionado un token");
+            }
         }
 
         jwt.verify(
@@ -59,7 +64,9 @@ export const verifyToken = (req, res, next) => {
 
                 try {
                     let usuario = await Usuario.findByPk(decoded.data.id, {
-                        attributes: ["id", "nombre", "rut", "email", "admin"],
+                        attributes: {
+                            exclude: ["password"],
+                        },
                     });
                     if (!usuario) {
                         return res.status(400).json({
@@ -70,7 +77,10 @@ export const verifyToken = (req, res, next) => {
                     req.usuario = usuario;
                     next();
                 } catch (error) {
-                    res.status(500).json({code: 500, message: "Error en autencicación."})
+                    res.status(500).json({
+                        code: 500,
+                        message: "Error en autenticación.",
+                    });
                 }
             }
         );
