@@ -1,10 +1,23 @@
 import Post from "../models/Post.models.js";
 import Usuario from "../models/Usuario.models.js";
 import Comentario from "../models/Comentario.models.js";
+import Reaccion from "../models/Reaccion.models.js";
 import moment from "moment";
+import sequelize from "../database/database.js";
 moment.locale("es");
 
 const home = async (req, res) => {
+
+    let [rows] = await sequelize.query(`
+        select u."nombre", u."apellido", count(*) cantidad from "Usuarios" u
+        INNER JOIN "Posts" p
+        ON u."id" = p."autorId"
+        group by u."nombre", u."apellido"
+        having count(*)  > 0
+        order by cantidad desc
+        limit 5
+    `);
+    let topPosts = rows;
     let cantidadComentarios = await Post.count();
     let posts = await Post.findAll({
         order: [["createdAt", "DESC"]],
@@ -14,18 +27,29 @@ const home = async (req, res) => {
                 as: "autor",
                 attributes: ["nombre", "apellido"],
             },
+            {
+                model: Reaccion,
+                as: "reacciones",
+                attributes: ["like", "usuarioId"],
+            },
         ],
     });
 
     posts = posts.map(post => post.toJSON())
     posts = posts.map((post) => {
         post.createdAt = moment(post.createdAt).format("MMMM Do YYYY, h:mm:ss a");
+        let likes = post.reacciones.filter(reaccion => reaccion.like);
+        let dislikes = post.reacciones.filter(reaccion => !reaccion.like)
+        post.likes = likes.length;
+        post.dislikes = dislikes.length; 
         return post
     });
+    console.log(posts);
 
     res.render("home", {
         posts,
         cantidadComentarios,
+        topPosts,
     });
 };
 
@@ -68,6 +92,11 @@ const detallePosts = async (req, res) => {
                         },
                     ],
                 },
+                {
+                    model: Reaccion,
+                    as: "reacciones",
+                    attributes: ["like", "usuarioId"],
+                },
             ],
         });
 
@@ -75,6 +104,11 @@ const detallePosts = async (req, res) => {
         post.createdAt = moment(post.createdAt).format(
             "MMMM Do YYYY, h:mm:ss a"
         );
+
+        let likes = post.reacciones.filter((reaccion) => reaccion.like);
+        let dislikes = post.reacciones.filter((reaccion) => !reaccion.like);
+        post.likes = likes.length;
+        post.dislikes = dislikes.length; 
 
         console.log(post);
         res.render("detallePost", {

@@ -12,6 +12,7 @@ import viewsRoutes from "./routes/views.routes.js";
 import usuariosRoutes from "./routes/usuarios.routes.js";
 import postsRoutes from "./routes/posts.routes.js";
 import comentariosRoutes from "./routes/comentarios.routes.js";
+import reaccionesRoutes from "./routes/reacciones.routes.js";
 
 const app = express();
 
@@ -40,6 +41,7 @@ app.use("/public", express.static(path.resolve(__dirname, "../public")));
 app.use("/api/v1/usuarios", usuariosRoutes);
 app.use("/api/v1/posts", postsRoutes);
 app.use("/api/v1/comentarios", comentariosRoutes);
+app.use("/api/v1/reacciones", reaccionesRoutes);
 
 //rutas de vista
 app.use("/", viewsRoutes);

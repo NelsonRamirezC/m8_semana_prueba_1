@@ -5,15 +5,23 @@
     {{#if posts}}
         <h2 class="text-center mt-5">POSTS</h2>
         <h3>Cantidad de post creados por los usuarios: {{cantidadComentarios}}</h3>
+        <h4>Ranking de usuarios con más Posts:</h4>
+        <ul>
+            {{#each topPosts}}
+                <li>{{this.nombre}} {{this.apellido}}: {{this.cantidad}}</li>
+            {{/each}}
+        </ul>
         {{#each posts}}
             {{> post 
                 titulo= this.titulo 
                 imagen = this.imagen  
                 contenido = this.contenido  
                 creacion = this.createdAt
-                nombre = this.nombreAutor
-                apellido = this.apellidoAutor
+                nombre = this.autor.nombre
+                apellido = this.autor.apellido
                 boton = "true"
+                like = this.likes
+                dislike = this.dislikes
             }}
         {{/each}}
 
@@ -22,3 +30,63 @@
     {{/if}}
 
 </section>
+
+
+<script>
+
+  let btnLikes = document.querySelectorAll(".like");
+  let btnDisLikes = document.querySelectorAll(".disLike");
+
+
+//evento a botones likes
+btnLikes.forEach(boton => {
+   boton.addEventListener("click", async () => {
+    let postId = boton.dataset.id;
+
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${token}`);
+
+    let response = await fetch("/api/v1/reacciones/like/"+postId, {
+        method: "POST",
+        headers: myHeaders,
+        redirect: 'follow'
+    })
+
+    let result = await response.json();
+
+    if(result.code == 201){
+        alert(result.message);
+        location.reload();
+    }else{
+        alert(result.message);
+    }
+
+   })
+})
+
+//evento a botones dislikes
+btnDisLikes.forEach(boton => {
+   boton.addEventListener("click", async () => {
+     let postId = boton.dataset.id;
+
+     const myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${token}`);
+
+    let response = await fetch("/api/v1/reacciones/dislike/"+postId, {
+        method: "POST",
+        headers: myHeaders,
+        redirect: 'follow'
+    })
+
+    let result = await response.json();
+
+    if(result.code == 201){
+        alert(result.message);
+        location.reload();
+    }else{
+        alert(result.message);
+    }
+
+   })
+})
+</script>

@@ -7,17 +7,28 @@ const uploadFiles = (req, res, next) => {
         let imagen = req.files.imagen;
         let formatosPermitidos = ["jpeg", "png", "webp", "gif", "svg"];
         let extension = `${imagen.mimetype.split("/")[1]}`;
+        let limiteMb = 2;
+        let limitePesoFoto = limiteMb * 1024 * 1024;
 
-        if (!formatosPermitidos.includes(extension)) {
+        //LIMITE TAMAÑO DE ARCHIVOS.
+        if (imagen.size > limitePesoFoto) {
             return res.status(400).json({
                 code: 400,
-                message: `Formato no permitido ${extension}, formatos permitidos(${formatosPermitidos.join(
-                    " - "
-                )})`,
+                message: `Ha sobrepasado el limite permitido [${limiteMb} mb]`,
             });
         }
+
+            if (!formatosPermitidos.includes(extension)) {
+                return res.status(400).json({
+                    code: 400,
+                    message: `Formato no permitido ${extension}, formatos permitidos(${formatosPermitidos.join(
+                        " - "
+                    )})`,
+                });
+            }
         let nombreFoto = `${Date.now()}-img.${extension}`;
         let pathDestino = path.resolve(__dirname, "../../public/uploads/" + nombreFoto);
+
 
         imagen.mv(pathDestino, async (error) => {
             if (error) {
